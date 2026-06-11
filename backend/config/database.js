@@ -1,50 +1,27 @@
 // backend/config/database.js
-require('dotenv').config();
+const { Sequelize } = require('sequelize');
 
-module.exports = {
-  development: {
-    username: process.env.DB_USER || 'app_user',
-    password: process.env.DB_PASSWORD || 'app_password',
-    database: process.env.DB_NAME || 'app_database',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
-    logging: console.log,
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000
-    }
-  },
-  test: {
-    username: process.env.DB_USER || 'app_user',
-    password: process.env.DB_PASSWORD || 'app_password',
-    database: process.env.DB_NAME + '_test' || 'app_database_test',
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
-    logging: false
-  },
-  production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: 'postgres',
-    logging: false,
-    pool: {
-      max: 10,
-      min: 2,
-      acquire: 30000,
-      idle: 10000
-    },
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    }
-  }
-};
+// Obtenemos el entorno actual (por defecto 'development')
+const env = process.env.NODE_ENV || 'development';
+
+// Importamos la configuración que armaste en config.js según el entorno
+const config = require('./config.js')[env];
+
+// Creamos la instancia de conexión a la base de datos
+const sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  config
+);
+
+// Probamos la conexión (opcional pero muy recomendado para debugear)
+sequelize.authenticate()
+  .then(() => {
+    console.log('Conexión a PostgreSQL establecida con éxito.');
+  })
+  .catch(err => {
+    console.error('No se pudo conectar a la base de datos:', err);
+  });
+
+module.exports = sequelize;
