@@ -1,0 +1,33 @@
+
+const catchAsync = (fn) => {
+return (req, res, next) => {
+    fn(req, res, next).catch((error) => {
+    console.error('Error capturado por la función auxiliar catchAsync:', error);
+res.status(500).json({ 
+        success: false,
+        error: 'Error interno del servidor' 
+});
+    });
+};
+};
+
+const successResponse = (res, statusCode, message, data = {}) => {
+return res.status(statusCode).json({
+        success: true,
+        message,
+...data
+});
+};
+
+const errorResponse = (res, statusCode, errorMessage) => {
+return res.status(statusCode).json({
+        success: false,
+        error: errorMessage
+});
+};
+
+module.exports = {
+catchAsync,
+successResponse,
+errorResponse
+};
