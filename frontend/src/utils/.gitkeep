@@ -1,0 +1,21 @@
+
+export const setToken = (token) => {
+localStorage.setItem('token', token);
+};
+
+export const getToken = () => {
+return localStorage.getItem('token');
+};
+
+export const removeToken = () => {
+localStorage.removeItem('token');
+};
+
+export const validarEmail = (email) => {
+const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+return regex.test(email);
+};
+
+export const validarPassword = (password) => {
+return password.length >= 6;
+};
