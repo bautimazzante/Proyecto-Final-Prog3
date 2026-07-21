@@ -1,0 +1,44 @@
+import axios from 'axios';
+import { getToken } from '../utils/token'; 
+
+const API_URL = 'http://localhost:3000/api/auth';
+
+export const registerService = async (nombre, email, password) => {
+try {
+    const response = await axios.post(`${API_URL}/register`, {
+    nombre,
+    email,
+    password
+    });
+    return response.data; 
+} catch (error) {
+    throw error.response?.data?.error || 'Error al registrar usuario';
+}
+};
+
+export const loginService = async (email, password) => {
+try {
+    const response = await axios.post(`${API_URL}/login`, {
+    email,
+password
+    });
+    return response.data;
+} catch (error) {
+    throw error.response?.data?.error || 'Error al iniciar sesión';
+}
+};
+
+export const getPerfilService = async () => {
+try {
+    const token = getToken(); 
+    
+    const response = await axios.get(`${API_URL}/perfil`, {
+headers: {
+        Authorization: `Bearer ${token}` 
+}
+    });
+    return response.data; 
+} catch (error) {
+    throw error.response?.data?.error || 'Error al cargar el perfil';
+}
+};
