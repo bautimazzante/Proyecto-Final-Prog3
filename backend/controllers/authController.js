@@ -3,7 +3,8 @@ const { generarToken } = require('../middleware/auth');
 
 const register = async (req, res) => {
   try {
-    const { nombre, email, password } = req.body;
+    const { name, nombre: nombreBody, email, password } = req.body;
+    const nombre = name || nombreBody;
 
     // Verificar que no exista un usuario con ese email
     const existente = await User.findOne({ where: { email } });
@@ -11,10 +12,10 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'El email ya está registrado' });
     }
 
-    // TODO RESUELTO: Crear el usuario en la base de datos usando User.create()
+    // Crear el usuario en la base de datos usando User.create()
     const user = await User.create({ nombre, email, password });
 
-    // TODO RESUELTO: Generar un token para el usuario recién creado usando generarToken()
+    // Generar un token para el usuario recién creado usando generarToken()
     const token = generarToken(user);
 
     res.status(201).json({
@@ -32,14 +33,14 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // TODO RESUELTO: Buscar el usuario por email usando User.findOne()
+    // Buscar el usuario por email usando User.findOne()
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // TODO RESUELTO: Validar la contraseña usando el método user.validarPassword()
+    // Validar la contraseña usando el método user.validarPassword()
     const passwordValida = await user.validarPassword(password);
 
     if (!passwordValida) {
@@ -61,7 +62,7 @@ const login = async (req, res) => {
 
 const perfil = async (req, res) => {
   try {
-    // TODO RESUELTO: Obtener el usuario desde la base de datos usando el id de req.user
+    // Obtener el usuario desde la base de datos usando el id de req.user
     const user = await User.findByPk(req.user.id);
 
     if (!user) {
