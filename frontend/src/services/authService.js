@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3001/api';
+const API_URL = '/api';
 
 export const authService = {
   async login(email, password) {
@@ -8,7 +8,7 @@ export const authService = {
       body: JSON.stringify({ email, password }),
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al iniciar sesión');
+    if (!response.ok) throw new Error(data.error || data.message || 'Error al iniciar sesión');
     if (data.token) {
       localStorage.setItem('token', data.token);
     }
@@ -22,7 +22,12 @@ export const authService = {
       body: JSON.stringify({ name, email, password }),
     });
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Error al registrarse');
+    if (!response.ok) throw new Error(data.error || data.message || 'Error al registrarse');
+    
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+    }
+    
     return data;
   },
 
