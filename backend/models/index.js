@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 // backend/models/index.js
 // inicializar Sequelize usando la configuracion y agrupar todos
 // los modelos del sistema en un solo objeto
+=======
+>>>>>>> thiago-tapuerca
 const { Sequelize } = require('sequelize');
-const config = require('../config/database');
+const config = require('../config/config');
 
 const env = process.env.NODE_ENV || 'development';
 const dbConfig = config[env];
