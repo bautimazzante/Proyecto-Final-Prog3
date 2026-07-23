@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authRoutes = require('./auth');
+const metasRoutes = require('./metas'); // <-- 1. Importamos las nuevas rutas
 
 // Ruta de prueba
 router.get('/health', (req, res) => {
@@ -14,6 +15,9 @@ router.get('/health', (req, res) => {
 
 // Rutas de autenticación
 router.use('/auth', authRoutes);
+
+// Rutas de metas (NUEVO)
+router.use('/metas', metasRoutes); // <-- 2. Conectamos las rutas en /api/metas
 
 // Ruta de ejemplo
 router.get('/test', (req, res) => {

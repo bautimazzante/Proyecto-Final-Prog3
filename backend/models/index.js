@@ -21,11 +21,45 @@ const sequelize = new Sequelize(
   }
 );
 
+// 1. Importar e inicializar los modelos
 const UserModel = require('./User');
-const User = UserModel(sequelize);
+const MetaModel = require('./Meta');
+const TareaModel = require('./Tarea');
 
+const User = UserModel(sequelize);
+const Meta = MetaModel(sequelize);
+const Tarea = TareaModel(sequelize);
+
+// 2. Definir las asociaciones (Relaciones)
+
+// Un Usuario tiene muchas Metas (Relación 1 a N)
+User.hasMany(Meta, {
+  foreignKey: 'userId', // Sequelize creará esta columna en la tabla Metas
+  as: 'metas'
+});
+// Una Meta pertenece a un Usuario
+Meta.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'usuario'
+});
+
+// Una Meta tiene muchas Tareas (Relación 1 a N)
+Meta.hasMany(Tarea, {
+  foreignKey: 'metaId', // Sequelize creará esta columna en la tabla Tareas
+  as: 'tareas',
+  onDelete: 'CASCADE' // Regla vital: si el usuario elimina una meta, se eliminan automáticamente sus tareas asociadas
+});
+// Una Tarea pertenece a una Meta
+Tarea.belongsTo(Meta, {
+  foreignKey: 'metaId',
+  as: 'meta'
+});
+
+// 3. Exportar todos los modelos y la conexión
 module.exports = {
   sequelize,
   Sequelize,
-  User
+  User,
+  Meta,
+  Tarea
 };

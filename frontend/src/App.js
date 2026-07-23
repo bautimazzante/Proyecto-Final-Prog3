@@ -1,19 +1,44 @@
 import React from 'react';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
+// Componente protector: Verifica si hay un token en el navegador. 
+// Si no lo hay, "patea" al usuario a la pantalla de login.
+const RutaProtegida = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>¡Bienvenido a tu nueva aplicación!</h1>
-        <p>Frontend React funcionando correctamente</p>
-        <p>
-          <a href="/api/health" target="_blank" rel="noopener noreferrer">
-            Verificar estado de la API
-          </a>
-        </p>
-      </header>
-    </div>
+    <Router>
+      <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+        <Routes>
+          {/* Rutas Públicas */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Rutas Privadas */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <RutaProtegida>
+                <Dashboard />
+              </RutaProtegida>
+            } 
+          />
+
+          {/* Redirección por defecto */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
