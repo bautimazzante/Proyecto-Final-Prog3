@@ -1,41 +1,35 @@
-const API_URL = '/api';
+import axios from 'axios';
 
-export const authService = {
-  async login(email, password) {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || data.message || 'Error al iniciar sesión');
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-    }
-    return data;
-  },
+const API_URL = '/api/auth';
 
-  async register(name, email, password) {
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || data.message || 'Error al registrarse');
-    
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-    }
-    
-    return data;
-  },
-
-  logout() {
-    localStorage.removeItem('token');
-  },
-
-  getToken() {
-    return localStorage.getItem('token');
+// Iniciar sesión
+export const login = async (email, password) => {
+  const response = await axios.post(`${API_URL}/login`, { email, password });
+  if (response.data.token) {
+    localStorage.setItem('token', response.data.token);
   }
+  return response.data;
+};
+
+// Registrar nuevo usuario
+export const register = async (nombre, email, password) => {
+  const response = await axios.post(`${API_URL}/register`, { nombre, email, password });
+  if (response.data.token) {
+    localStorage.setItem('token', response.data.token);
+  }
+  return response.data;
+};
+
+// Cerrar sesión
+export const logout = () => {
+  localStorage.removeItem('token');
+};
+
+// Obtener perfil del usuario actual
+export const getPerfil = async () => {
+  const token = localStorage.getItem('token');
+  const response = await axios.get(`${API_URL}/perfil`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
 };

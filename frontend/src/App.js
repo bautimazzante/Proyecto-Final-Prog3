@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
-import './App.css';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';
-import { authService } from './services/authService';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
+// Componente protector: Verifica si hay un token en el navegador. 
+// Si no lo hay, "patea" al usuario a la pantalla de login.
+const RutaProtegida = ({ children }) => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
 
 function App() {
   const [token, setToken] = useState(authService.getToken());
@@ -14,28 +23,29 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header" style={{ padding: '20px' }}>
-        <h1>Proyecto Final - Prog 3</h1>
-        <div>
-          <button 
-            onClick={() => setCurrentView('login')} 
-            style={{ margin: '0 10px', padding: '8px 15px', background: currentView === 'login' ? '#007BFF' : '#ccc', color: 'white', border: 'none', borderRadius: '4px' }}
-          >
-            Iniciar Sesión
-          </button>
-          <button 
-            onClick={() => setCurrentView('register')} 
-            style={{ margin: '0 10px', padding: '8px 15px', background: currentView === 'register' ? '#28a745' : '#ccc', color: 'white', border: 'none', borderRadius: '4px' }}
-          >
-            Registrarse
-          </button>
-        </div>
-      </header>
-      <main>
-        {currentView === 'login' ? <LoginPage /> : <RegisterPage />}
-      </main>
-    </div>
+    <Router>
+      <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+        <Routes>
+          {/* Rutas Públicas */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Rutas Privadas */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <RutaProtegida>
+                <Dashboard />
+              </RutaProtegida>
+            } 
+          />
+
+          {/* Redirección por defecto */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

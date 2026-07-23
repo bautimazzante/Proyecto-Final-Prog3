@@ -15,7 +15,7 @@ const sequelize = new Sequelizig.database( //creamos el ORM
   config
 );
 
-// Probamos la conexión (opcional pero muy recomendado para debugear)
+// Probamos la conexión 
 sequelize.authenticate() //le manda un ping a Docker para verifica que el usuario y contraseña sean correctos
   .then(() => {
     console.log('Conexión a PostgreSQL establecida con éxito.');
