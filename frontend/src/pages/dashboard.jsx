@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MetaCard from '../components/MetaCard';
-import NuevaMetaModal from '../components/NuevaMetaModal';
+import MetaCard from '../components/metaCard';
+import NuevaMetaModal from '../components/nuevaMetaModel';
 import { getMetas, actualizarEstadoTarea, crearMeta, agregarTarea } from '../services/metasService';
 import { logout } from '../services/authService';
+import { metasService } from '../services/metasService';
 
 const Dashboard = () => {
   const [metas, setMetas] = useState([]);

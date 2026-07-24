@@ -20,8 +20,8 @@ const sequelize = new Sequelize(
 
 // 1. Importar e inicializar los modelos
 const UserModel = require('./User');
-const MetaModel = require('./Meta');
-const TareaModel = require('./Tarea');
+const MetaModel = require('./metas'); 
+const TareaModel = require('./tarea');
 
 const User = UserModel(sequelize);
 const Meta = MetaModel(sequelize);
