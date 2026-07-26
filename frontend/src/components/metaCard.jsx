@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const MetaCard = ({ meta, onActualizarTarea, onAgregarTarea }) => {
+const MetaCard = ({ meta, onActualizarTarea, onAgregarTarea, onEliminarMeta, onEliminarTarea }) => {
   const [nuevaTarea, setNuevaTarea] = useState('');
   const [agregando, setAgregando] = useState(false);
 
@@ -33,6 +33,16 @@ const MetaCard = ({ meta, onActualizarTarea, onAgregarTarea }) => {
         <span className={`text-xs font-semibold px-2.5 py-0.5 rounded ${getColorCategoria(meta.categoria)}`}>
           {meta.categoria}
         </span>
+        {/* Botón de eliminar Meta (Ícono de papelera) */}
+        <button 
+          onClick={() => onEliminarMeta(meta.id)}
+          className="text-slate-400 hover:text-rose-600 transition-colors"
+          title="Eliminar Meta"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
       </div>
       
       <h3 className="text-xl font-bold text-slate-800 mb-2">{meta.titulo}</h3>
@@ -52,16 +62,28 @@ const MetaCard = ({ meta, onActualizarTarea, onAgregarTarea }) => {
 
       <ul className="space-y-3 text-sm text-slate-600 flex-1 mt-2 mb-4">
         {meta.tareas?.map((tarea) => (
-          <li key={tarea.id} className="flex items-start gap-2">
-            <input 
-              type="checkbox" 
-              className="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 cursor-pointer" 
-              checked={tarea.completada}
-              onChange={(e) => onActualizarTarea(tarea.id, e.target.checked)}
-            />
-            <span className={tarea.completada ? "line-through text-slate-400 transition-colors" : "transition-colors"}>
-              {tarea.descripcion}
-            </span>
+          // Añadimos 'group' y 'justify-between' al li para el hover del botón eliminar tarea
+          <li key={tarea.id} className="flex items-start justify-between gap-2 group">
+            <div className="flex items-start gap-2 flex-1">
+              <input 
+                type="checkbox" 
+                className="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 cursor-pointer" 
+                checked={tarea.completada}
+                onChange={(e) => onActualizarTarea(tarea.id, e.target.checked)}
+              />
+              <span className={tarea.completada ? "line-through text-slate-400 transition-colors" : "transition-colors"}>
+                {tarea.descripcion}
+              </span>
+            </div>
+            
+            {/* Botón de eliminar Tarea (Visible al hacer hover en la tarea) */}
+            <button
+              onClick={() => onEliminarTarea(meta.id, tarea.id)}
+              className="text-slate-300 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 font-bold px-1"
+              title="Eliminar tarea"
+            >
+              &times;
+            </button>
           </li>
         ))}
       </ul>

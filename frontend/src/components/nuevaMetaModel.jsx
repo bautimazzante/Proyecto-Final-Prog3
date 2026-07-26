@@ -24,8 +24,8 @@ const NuevaMetaModal = ({ isOpen, onClose, onGuardar }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 relative">
         <h2 className="text-2xl font-bold text-slate-800 mb-4">Nueva Meta</h2>
         
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -37,7 +37,7 @@ const NuevaMetaModal = ({ isOpen, onClose, onGuardar }) => {
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none"
-              placeholder="Ej: Leer 12 libros"
+              placeholder="Ej: Aprobar base de datos"
             />
           </div>
           <div>

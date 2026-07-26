@@ -1,26 +1,28 @@
 const express = require('express');
 const router = express.Router();
+
+// 1. Importamos las funciones del controlador
 const { 
   getMetas, 
   crearMeta, 
   agregarTarea, 
-  actualizarEstadoTarea 
+  actualizarEstadoTarea, 
+  eliminarMeta, 
+  eliminarTarea 
 } = require('../controllers/metasController');
-const { verificarToken } = require('../middleware/auth');
 
-// Todas las rutas de este archivo estarán protegidas por verificarToken
-router.use(verificarToken);
+// 2. Extraemos específicamente "verificarToken" de tu archivo de seguridad.
+// IMPORTANTE: Cambia '../middleware/auth' si tu archivo se llama diferente (ej: '../utils/jwt' o '../middlewares/auth')
+const { verificarToken } = require('../middleware/auth'); 
 
-// GET /api/metas - Obtener todas las metas del usuario logueado
-router.get('/', getMetas);
+// 3. Definimos las rutas protegiéndolas con verificarToken
+router.get('/', verificarToken, getMetas);
+router.post('/', verificarToken, crearMeta);
+router.post('/:metaId/tareas', verificarToken, agregarTarea);
+router.put('/tareas/:tareaId/estado', verificarToken, actualizarEstadoTarea);
 
-// POST /api/metas - Crear una nueva meta
-router.post('/', crearMeta);
-
-// POST /api/metas/:metaId/tareas - Agregar una subtarea a una meta
-router.post('/:metaId/tareas', agregarTarea);
-
-// PUT /api/metas/tareas/:tareaId/estado - Marcar/Desmarcar tarea como completada
-router.put('/tareas/:tareaId/estado', actualizarEstadoTarea);
+// 4. Rutas para eliminar
+router.delete('/:metaId', verificarToken, eliminarMeta);
+router.delete('/tareas/:tareaId', verificarToken, eliminarTarea);
 
 module.exports = router;

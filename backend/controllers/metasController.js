@@ -1,16 +1,16 @@
 const { Meta, Tarea } = require('../models');
 
-// 1. Obtener todas las metas del usuario (incluyendo sus tareas)
+// 1. Obtener todas las metas del usuario
 const getMetas = async (req, res) => {
   try {
     const metas = await Meta.findAll({
-      where: { userId: req.user.id }, // Solo traemos las del usuario logueado
+      where: { userId: req.user.id },
       include: [{
         model: Tarea,
-        as: 'tareas', // Usamos el alias que definimos en index.js
-        attributes: ['id', 'descripcion', 'completada'] // Traemos solo los datos necesarios
+        as: 'tareas',
+        attributes: ['id', 'descripcion', 'completada']
       }],
-      order: [['createdAt', 'DESC']] // Ordenamos para ver las más recientes primero
+      order: [['createdAt', 'DESC']]
     });
 
     res.json({ metas });
@@ -29,7 +29,7 @@ const crearMeta = async (req, res) => {
       titulo,
       descripcion,
       categoria,
-      userId: req.user.id // La asociamos automáticamente al usuario que hace la petición
+      userId: req.user.id 
     });
 
     res.status(201).json({
@@ -42,13 +42,12 @@ const crearMeta = async (req, res) => {
   }
 };
 
-// 3. Agregar una tarea (subtarea) a una meta existente
+// 3. Agregar una tarea a una meta existente
 const agregarTarea = async (req, res) => {
   try {
     const { metaId } = req.params;
     const { descripcion } = req.body;
 
-    // Primero verificamos que la meta exista y PERTENEZCA al usuario
     const meta = await Meta.findOne({
       where: { id: metaId, userId: req.user.id }
     });
@@ -72,23 +71,20 @@ const agregarTarea = async (req, res) => {
   }
 };
 
-// 4. Marcar/Desmarcar una tarea como completada (el checkbox del frontend)
+// 4. Marcar/Desmarcar una tarea como completada
 const actualizarEstadoTarea = async (req, res) => {
   try {
     const { tareaId } = req.params;
-    const { completada } = req.body; // Recibimos true o false
+    const { completada } = req.body; 
 
-    // Buscamos la tarea e incluimos los datos de la Meta para verificar al dueño
     const tarea = await Tarea.findByPk(tareaId, {
       include: [{ model: Meta, as: 'meta' }]
     });
 
-    // Verificamos que la tarea exista y que el usuario logueado sea el dueño de la meta padre
     if (!tarea || tarea.meta.userId !== req.user.id) {
       return res.status(404).json({ error: 'Tarea no encontrada o no autorizada' });
     }
 
-    // Actualizamos el estado en la base de datos
     tarea.completada = completada;
     await tarea.save();
 
@@ -102,10 +98,56 @@ const actualizarEstadoTarea = async (req, res) => {
   }
 };
 
-// Exportamos todas las funciones para usarlas en las rutas
+// 5. Eliminar una Meta completa
+const eliminarMeta = async (req, res) => {
+  try {
+    const { metaId } = req.params;
+
+    const borrados = await Meta.destroy({
+      where: { 
+        id: metaId,
+        userId: req.user.id 
+      }
+    });
+
+    if (borrados === 0) {
+      return res.status(404).json({ error: 'Meta no encontrada o no autorizada' });
+    }
+
+    res.json({ message: 'Meta eliminada correctamente' });
+  } catch (error) {
+    console.error('Error en eliminarMeta:', error);
+    res.status(500).json({ error: 'Error al eliminar la meta' });
+  }
+};
+
+// 6. Eliminar una Tarea individual
+const eliminarTarea = async (req, res) => {
+  try {
+    const { tareaId } = req.params;
+
+    const tarea = await Tarea.findByPk(tareaId, {
+      include: [{ model: Meta, as: 'meta' }]
+    });
+
+    if (!tarea || tarea.meta.userId !== req.user.id) {
+      return res.status(404).json({ error: 'Tarea no encontrada o no autorizada' });
+    }
+
+    await tarea.destroy();
+
+    res.json({ message: 'Tarea eliminada correctamente' });
+  } catch (error) {
+    console.error('Error en eliminarTarea:', error);
+    res.status(500).json({ error: 'Error al eliminar la tarea' });
+  }
+};
+
 module.exports = {
   getMetas,
   crearMeta,
   agregarTarea,
-  actualizarEstadoTarea
+  actualizarEstadoTarea,
+  eliminarMeta,
+  eliminarTarea
 };
